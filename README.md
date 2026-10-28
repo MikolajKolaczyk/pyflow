@@ -38,3 +38,19 @@ Złożoność czasowa tej implementacji wynosi O((V + E) log V), a pamięciowa O
 - tests/test_models.py — testy modeli.
 - tests/test_graph.py — testy grafu.
 - pyproject.toml — konfiguracja projektu.
+
+## Przykład workflowu
+
+```python
+from pyflow import Task, Workflow, topological_order
+
+def example_task(inputs, params):
+    return params.get("value", 0)
+
+workflow = Workflow()
+workflow.add_task(Task(name="extract", function=example_task, params={"value": 10}))
+workflow.add_task(Task(name="report", function=example_task, dependencies=frozenset({"extract"})))
+
+workflow.validate()
+print(topological_order(workflow))
+```
