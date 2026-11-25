@@ -1,0 +1,10 @@
+RAPORT WYKONANIA WORKFLOW
+===================================
+
+read_csv: SUCCEEDED | Czas: 0.000428 s
+clean_data: SUCCEEDED | Czas: 0.000009 s
+aggregate_data: SUCCEEDED | Czas: 0.000010 s
+generate_json: SUCCEEDED | Czas: 0.001238 s
+
+Czas całego przebiegu: 0.001717 s
+Sukces: True

@@ -1,0 +1,11 @@
+{
+    "title": "Raport sprzedaży",
+    "categories": {
+        "Elektronika": 2500,
+        "Odziez": 600,
+        "Sport": 350
+    },
+    "valid_records": 7,
+    "rejected_records": 0,
+    "total_amount": 3450
+}

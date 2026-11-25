@@ -3,7 +3,6 @@ from .models import Workflow, WorkflowValidationError
 
 
 def topological_order(workflow: Workflow) -> list[str]:
-    """Zwraca deterministyczną kolejność topologiczną zadań."""
     indegree = {
         name: len(task.dependencies)
         for name, task in workflow.tasks.items()
@@ -16,8 +15,7 @@ def topological_order(workflow: Workflow) -> list[str]:
         for dependency in task.dependencies:
             if dependency not in workflow.tasks:
                 raise WorkflowValidationError(
-                    f"Zadanie '{name}' zależy od nieistniejącego zadania "
-                    f"'{dependency}'."
+                    f"Brak zadania '{dependency}', wymaganego przez '{name}'."
                 )
             dependents[dependency].append(name)
 
@@ -37,30 +35,25 @@ def topological_order(workflow: Workflow) -> list[str]:
                 ready.sort()
 
     if len(order) != len(workflow.tasks):
-        raise WorkflowValidationError(
-            "Wykryto cykl w grafie zależności workflow."
-        )
+        raise WorkflowValidationError("Wykryto cykl w grafie zależności.")
 
     return order
 
 
 def execution_layers(workflow: Workflow) -> list[list[str]]:
-    """Grupuje zadania w warstwy możliwe do wykonania równolegle."""
     remaining = set(workflow.tasks)
     completed: set[str] = set()
     layers: list[list[str]] = []
 
     while remaining:
         layer = sorted(
-            name
-            for name in remaining
+            name for name in remaining
             if workflow.tasks[name].dependencies <= completed
         )
 
         if not layer:
             raise WorkflowValidationError(
-                "Nie można wyznaczyć warstw: graf zawiera cykl "
-                "lub brakujące zależności."
+                "Nie można wyznaczyć warstw: cykl lub brakujące zależności."
             )
 
         layers.append(layer)

@@ -1,4 +1,5 @@
-﻿import pytest
+﻿
+import pytest
 
 from pyflow import Task, Workflow, WorkflowValidationError
 
@@ -9,6 +10,7 @@ def dummy_function(inputs, params):
 
 def test_task_creation():
     task = Task(name="extract", function=dummy_function)
+
     assert task.name == "extract"
     assert task.dependencies == frozenset()
     assert task.params == {}
@@ -31,6 +33,7 @@ def test_task_rejects_self_dependency():
 def test_workflow_rejects_duplicate_tasks():
     workflow = Workflow()
     task = Task(name="extract", function=dummy_function)
+
     workflow.add_task(task)
 
     with pytest.raises(WorkflowValidationError):
@@ -39,6 +42,7 @@ def test_workflow_rejects_duplicate_tasks():
 
 def test_workflow_rejects_missing_dependency():
     workflow = Workflow()
+
     workflow.add_task(
         Task(
             name="report",
@@ -49,3 +53,21 @@ def test_workflow_rejects_missing_dependency():
 
     with pytest.raises(WorkflowValidationError):
         workflow.validate()
+
+
+def test_task_copies_nested_params():
+    original_params = {
+        "settings": {
+            "value": 10
+        }
+    }
+
+    task = Task(
+        name="extract",
+        function=dummy_function,
+        params=original_params,
+    )
+
+    original_params["settings"]["value"] = 99
+
+    assert task.params["settings"]["value"] == 10
