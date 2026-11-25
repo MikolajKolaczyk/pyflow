@@ -1,6 +1,6 @@
-﻿
-from copy import deepcopy
+﻿from copy import deepcopy
 from dataclasses import dataclass, field
+from math import isfinite
 from typing import Any, Callable, Mapping
 
 TaskFunction = Callable[[Mapping[str, Any], Mapping[str, Any]], Any]
@@ -17,6 +17,8 @@ class Task:
     dependencies: frozenset[str] = field(default_factory=frozenset)
     params: Mapping[str, Any] = field(default_factory=dict)
     description: str = ""
+    retries: int = 0
+    timeout: float | None = None
 
     def __post_init__(self) -> None:
         if not self.name or not self.name.strip():
@@ -35,6 +37,27 @@ class Task:
             raise WorkflowValidationError(
                 f"Zadanie '{self.name}' nie może zależeć od samego siebie."
             )
+
+        if isinstance(self.retries, bool) or not isinstance(self.retries, int):
+            raise WorkflowValidationError(
+                "Liczba ponowień musi być liczbą całkowitą."
+            )
+
+        if self.retries < 0:
+            raise WorkflowValidationError(
+                "Liczba ponowień nie może być ujemna."
+            )
+
+        if self.timeout is not None:
+            if (
+                isinstance(self.timeout, bool)
+                or not isinstance(self.timeout, (int, float))
+                or not isfinite(self.timeout)
+                or self.timeout <= 0
+            ):
+                raise WorkflowValidationError(
+                    "Timeout musi być dodatnią, skończoną liczbą sekund lub None."
+                )
 
 
 class Workflow:

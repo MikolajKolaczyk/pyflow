@@ -5,7 +5,9 @@ from .execution import (
     TaskState,
     RunResult,
     TaskExecutionError,
+    RetryPolicy,
     run,
+    async_run,
 )
 
 __all__ = [
@@ -18,5 +20,7 @@ __all__ = [
     "TaskState",
     "RunResult",
     "TaskExecutionError",
+    "RetryPolicy",
     "run",
+    "async_run",
 ]
